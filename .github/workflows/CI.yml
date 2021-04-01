@@ -12,6 +12,7 @@ jobs:
     env:
       build_variant: ${{ matrix.build_variant }}
       targets: ${{ matrix.targets }}
+      images_dir: /opt/images
     strategy:
       matrix:
         include:
@@ -33,12 +34,13 @@ jobs:
           sh dl_toolchain.sh
       - name: Start build
         run: |
-          cd /opt/rt-n56u/trunk
+          cd trunk
+          mkdir -p ${images_dir}
           for m in $targets; do fakeroot ./build_firmware_ci $m; \
-          if [ $? = 0 ]; then cp -f images/*.trx /opt/images/$m.trx; else exit 1; fi; \
+          if [ $? = 0 ]; then cp -f images/*.trx ${images_dir}/$m.trx; else exit 1; fi; \
           ./clear_tree_simple >/dev/null 2>&1; done
       - name: Upload images to Artifact
         if: ${{ github.event_name != 'release' && success() }}
         uses: actions/upload-artifact@v2.2.1
         with:
-          path: /opt/images/*.trx
+          path: ${{ env.images_dir }}/*.trx
