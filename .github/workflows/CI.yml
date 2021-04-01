@@ -4,6 +4,10 @@ on:
   push:
     branches: [ master ]
 
+env:
+  toolchain_pkg: mipsel-linux-uclibc.tar.xz
+  toolchain_url: https://github.com/hanwckf/padavan-toolchain/releases/download/v1.1
+
 jobs:
   build:
     name: build
