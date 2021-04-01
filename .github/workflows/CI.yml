@@ -4,10 +4,6 @@ on:
   push:
     branches: [ master ]
 
-env:
-  toolchain_pkg: mipsel-linux-uclibc.tar.xz
-  toolchain_url: https://github.com/hanwckf/padavan-toolchain/releases/download/v1.1
-
 jobs:
   build:
     name: build
@@ -19,6 +15,8 @@ jobs:
     strategy:
       matrix:
         include:
+          - build_variant: "mt7621"
+            targets: "RM2100_meolunr"
           - build_variant: "mt7621-usb"
             targets: "B70_meolunr"
     steps:
@@ -31,10 +29,8 @@ jobs:
         run: sh ./trunk/tools/shellcheck.sh
       - name: Prepare toolchain
         run: |
-          mkdir -p /opt/rt-n56u/toolchain-mipsel/toolchain-3.4.x && mkdir -p /opt/images/
-          rm -rf toolchain-mipsel/ && mv -f * .[^.]* /opt/rt-n56u
-          curl -LO ${toolchain_url}/${toolchain_pkg}
-          tar -xf $toolchain_pkg -C /opt/rt-n56u/toolchain-mipsel/toolchain-3.4.x
+          cd toolchain-mipsel
+          sh dl_toolchain.sh
       - name: Start build
         run: |
           cd /opt/rt-n56u/trunk
